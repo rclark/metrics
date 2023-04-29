@@ -30,10 +30,10 @@ err := metrics.GlobalConfig(metrics.WithSinkAddress("0.0.0.0:8125"))
 
 In your codebase, define identifiers for each metric that your application generates. An identifier is just the metric's name, and its type. There are 4 types:
 
-- Count: Used to track the number of events per unit time.
-- Gauge: Used to track a measured value at a point in time.
-- Distribution: Used to track the statistical distribution of a value over time.
-- Timing: Used to track the statistical distribution of a duration over time.
+- **Count**: Used to track the number of events per unit time.
+- **Gauge**: Used to track a measured value at a point in time.
+- **Distribution**: Used to track the statistical distribution of a value over time.
+- **Timing**: Used to track the statistical distribution of a duration over time.
 
 Use a type-specific function to generate metric identifiers in your application. By doing this in one place in your program, you will have a catalog of all the metrics that are important to your application.
 
