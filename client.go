@@ -1,11 +1,11 @@
-// Package metrics is a library for collecting
-// [statsd metrics](https://github.com/statsd/statsd/blob/master/docs/metric_types.md).
+// Package metrics is a library for collecting [statsd metrics].
 //
-// The library's only strong opinion is that
-// [your application should catalog the names and types of the metrics that it generates](#define-metric-identifiers).
-// Other than that, it is just a convenient, generic wrapper around
-// [go-metrics](https://pkg.go.dev/github.com/armon/go-metrics) for statsd,
-// specifically.
+// The library's only strong opinion is that your application should catalog the
+// names and types of the metrics that it generates. Other than that, it is just
+// a convenient, generic wrapper around [go-metrics] for statsd, specifically.
+//
+// [statsd metrics]: https://github.com/statsd/statsd/blob/master/docs/metric_types.md
+// [go-metrics]: https://pkg.go.dev/github.com/armon/go-metrics
 package metrics
 
 import (
@@ -55,22 +55,26 @@ func (c Client) Close() error {
 type clientOption func(*Client)
 
 // WithPersistentTags configures a set of tags that should be applied to all
-// metrics emitted by the Client. Tags should be strings of the form key:value.
+// metrics emitted by the [Client]. Tags should be strings of the form key:value.
 func WithPersistentTags(tags ...string) clientOption {
 	return func(c *Client) {
 		c.tags = tags
 	}
 }
 
-// WithSinkAddress sets the address of the statsd sink to which the Client will
-// emit metrics. The default address is 127.0.0.1:8125.
+// WithSinkAddress sets the address of the statsd sink to which the [Client] will
+// emit metrics. The default address is "127.0.0.1:8125".
 func WithSinkAddress(addr string) clientOption {
 	return func(c *Client) {
 		c.addr = addr
 	}
 }
 
-// NewClient creates a new Client.
+// NewClient creates a new [Client].
+//
+// Options include:
+//   - [WithPersistentTags]
+//   - [WithSinkAddress]
 func NewClient(opts ...clientOption) (Client, error) {
 	var none Client
 
@@ -93,14 +97,18 @@ func NewClient(opts ...clientOption) (Client, error) {
 	return c, nil
 }
 
-// GlobalConfig configures the package's global client, allowing for the use
-// of the GlobalCollect function.
+// GlobalConfig configures the package's global [Client], allowing for the use
+// of the [GlobalEmit] function.
+//
+// Options include:
+//   - [WithPersistentTags]
+//   - [WithSinkAddress]
 func GlobalConfig(opts ...clientOption) (err error) {
 	global, err = NewClient(opts...)
 	return
 }
 
-// GlobalClose can be used to flush any metrics in the global client, prior to
+// GlobalClose can be used to flush any metrics in the global [Client], prior to
 // an application shutting down.
 func GlobalClose() error {
 	return global.Close()

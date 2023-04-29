@@ -42,7 +42,7 @@ func (mo metricOptions) Labels() []metrics.Label {
 type metricOption func(*metricOptions)
 
 // WithTags applies a set of tags to the metric being emitted. These are
-// appended to the Client's persistent tags (see WithPersistentTags). Tags
+// appended to the [Client]'s persistent tags (see [WithPersistentTags]). Tags
 // should be strings of the form key:value.
 func WithTags(tags ...string) metricOption {
 	return func(mo *metricOptions) {
@@ -58,8 +58,11 @@ func (c Client) applyOptions(opts ...metricOption) metricOptions {
 	return mo
 }
 
-// Emit emits a value for the provided metric Identifier using the provided
-// Client.
+// Emit emits a value for the provided metric [Identifier] using the provided
+// [Client].
+//
+// Options include:
+//   - [WithTags]
 func Emit[V valueType](client Client, metric Identifier[V], val V, opts ...metricOption) error {
 	switch int(metric.mt) {
 	case 1:
@@ -75,8 +78,11 @@ func Emit[V valueType](client Client, metric Identifier[V], val V, opts ...metri
 	}
 }
 
-// GlobalEmit emits a value for the provided metric Identifier using the
-// client configured for the package globally, see GlobalConfig.
+// GlobalEmit emits a value for the provided metric [Identifier] using the
+// [Client] configured for the package globally, see [GlobalConfig].
+//
+// Options include:
+//   - [WithTags]
 func GlobalEmit[V valueType](metric Identifier[V], val V, opts ...metricOption) error {
 	return Emit(global, metric, val, opts...)
 }
