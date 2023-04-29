@@ -1,3 +1,11 @@
+// Package metrics is a library for collecting
+// [statsd metrics](https://github.com/statsd/statsd/blob/master/docs/metric_types.md).
+//
+// The library's only strong opinion is that
+// [your application should catalog the names and types of the metrics that it generates](#define-metric-identifiers).
+// Other than that, it is just a convenient, generic wrapper around
+// [go-metrics](https://pkg.go.dev/github.com/armon/go-metrics) for statsd,
+// specifically.
 package metrics
 
 import (
@@ -12,29 +20,36 @@ var global, _ = NewClient()
 type Client struct {
 	addr   string
 	tags   []string
-	statsd *metrics.Metrics
+	statsd goMetrics
 }
 
 func (c Client) count(name string, val int64, opts ...metricOption) error {
-	mo := applyOptions(opts...)
+	mo := c.applyOptions(opts...)
 	c.statsd.IncrCounterWithLabels([]string{name}, float32(val), mo.Labels())
 	return nil
 }
 
 func (c Client) gauge(name string, val float32, opts ...metricOption) error {
-	mo := applyOptions(opts...)
+	mo := c.applyOptions(opts...)
 	c.statsd.SetGaugeWithLabels([]string{name}, val, mo.Labels())
 	return nil
 }
 
 func (c Client) distribution(name string, val float32, opts ...metricOption) error {
-	mo := applyOptions(opts...)
+	mo := c.applyOptions(opts...)
 	c.statsd.AddSampleWithLabels([]string{name}, val, mo.Labels())
 	return nil
 }
 
 func (c Client) timing(name string, val time.Duration, opts ...metricOption) error {
 	return c.distribution(name, float32(val), opts...)
+}
+
+// Close should be called when the application shuts down. It will flush metrics
+// to the underlying sink.
+func (c Client) Close() error {
+	c.statsd.Shutdown()
+	return nil
 }
 
 type clientOption func(*Client)
@@ -83,4 +98,10 @@ func NewClient(opts ...clientOption) (Client, error) {
 func GlobalConfig(opts ...clientOption) (err error) {
 	global, err = NewClient(opts...)
 	return
+}
+
+// GlobalClose can be used to flush any metrics in the global client, prior to
+// an application shutting down.
+func GlobalClose() error {
+	return global.Close()
 }

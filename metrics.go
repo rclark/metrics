@@ -28,7 +28,7 @@ func DistributionMetric(name string) Identifier[float32] {
 }
 
 // TimingMetric creates a metric Identifier for a distribution metric that
-// captures durations.
+// captures timing.
 func TimingMetric(name string) Identifier[time.Duration] {
 	return new(name, timing)
 }

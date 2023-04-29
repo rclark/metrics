@@ -50,8 +50,8 @@ func WithTags(tags ...string) metricOption {
 	}
 }
 
-func applyOptions(opts ...metricOption) metricOptions {
-	mo := metricOptions{tags: []string{}}
+func (c Client) applyOptions(opts ...metricOption) metricOptions {
+	mo := metricOptions{tags: c.tags}
 	for _, opt := range opts {
 		opt(&mo)
 	}
@@ -75,8 +75,8 @@ func Emit[V valueType](client Client, metric Identifier[V], val V, opts ...metri
 	}
 }
 
-// EmitGlobal emits a value for the provided metric Identifier using the
+// GlobalEmit emits a value for the provided metric Identifier using the
 // client configured for the package globally, see GlobalConfig.
-func EmitGlobal[V valueType](metric Identifier[V], val V, opts ...metricOption) error {
+func GlobalEmit[V valueType](metric Identifier[V], val V, opts ...metricOption) error {
 	return Emit(global, metric, val, opts...)
 }

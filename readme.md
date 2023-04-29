@@ -2,6 +2,8 @@
 
 A library for collecting [statsd metrics](https://github.com/statsd/statsd/blob/master/docs/metric_types.md).
 
+The library's only strong opinion is that [your application should catalog the names and types of the metrics that it generates](#define-metric-identifiers). Other than that, it is just a convenient, generic wrapper around [go-metrics](https://pkg.go.dev/github.com/armon/go-metrics) for statsd, specifically.
+
 ## Install
 
 ```
@@ -49,8 +51,8 @@ Use the `Emit()` function if you are passing a client through your application:
 err := metrics.Emit(client, BackgroundJobsFailed, 1)
 ```
 
-Or use the `EmitGlobal()` function if you are relying on a package-global client:
+Or use the `GlobalEmit()` function if you are relying on a package-global client:
 
 ```go
-err := metrics.Emit(BackgroundJobsFailed, 1)
+err := metrics.GlobalEmit(BackgroundJobsFailed, 1)
 ```
